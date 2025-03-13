@@ -26,7 +26,6 @@ Yahtzee scoring is divided into **Upper Section** and **Lower Section** categori
 | **Fives** | Sum of all 5s |
 | **Sixes** | Sum of all 6s |
 
-If the total of the **Upper Section** is **63 or higher**, a **35-point bonus** is awarded (this is not needed in this kata since we evaluate one roll at a time).
 
 ### **Lower Section**
 
