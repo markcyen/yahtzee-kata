@@ -1,10 +1,22 @@
 class YahtzeeScoring
+  # TODO: think about initializing these variables
+  # attr_reader :roll, :tally_roll
+  # def initialize(roll)
+  #   @roll = roll
+  #   @tally_roll = @roll.tally
+  #   @num_to_category = { 1 => :ones, 2 => :twos, 3 => :threes, 4 => :fours, 5 => :fives, 6 => :sixes }
+  # end
+
   @roll = []
+  @tally_roll = {}
+  @num_to_category = { 1 => :ones, 2 => :twos, 3 => :threes, 4 => :fours, 5 => :fives, 6 => :sixes }
 
   def self.best_score(roll)
     @roll = roll
 
     return "Error: The number of die being rolled should only be five." if @roll.length != 5
+
+    @tally_roll = @roll.tally
 
     best_category = nil
     best_score = 0
@@ -25,23 +37,17 @@ class YahtzeeScoring
   end
 
   def self.score_upper_section
-    best_category = nil
-    best_score = 0
 
-    (1..6).each do |num|
-      score = @roll.count(num) * num
-      if score > best_score
-        best_score = score
-        best_category = num_to_category(num)
-      end
-    end
+    # to get the highest, i want to multiple the keys and value and compare
+    num, tally = @tally_roll.max_by { |k, v| k * v }
+    best_score = num * tally
+    best_category = @num_to_category[num]
+ 
     { category: best_category, score: best_score }
   end
 
-  def self.num_to_category(num)
-    { 1 => :ones, 2 => :twos, 3 => :threes, 4 => :fours, 5 => :fives, 6 => :sixes }[num]
-  end
-
+  # TODO: integrate this into the main function and provide inline doc for each
+  # so these can be deprecated
   def self.score_lower_section
     best_category = nil
     best_score = 0
@@ -67,15 +73,15 @@ class YahtzeeScoring
   end
 
   def self.score_three_of_a_kind
-    @roll.tally.value?(3) ? { category: :three_of_a_kind, score: @roll.sum } : { category: nil, score: 0 }
+    @tally_roll.value?(3) ? { category: :three_of_a_kind, score: @roll.sum } : { category: nil, score: 0 }
   end
 
   def self.score_four_of_a_kind
-    @roll.tally.value?(4) ? { category: :four_of_a_kind, score: @roll.sum } : { category: nil, score: 0 }
+    @tally_roll.value?(4) ? { category: :four_of_a_kind, score: @roll.sum } : { category: nil, score: 0 }
   end
 
   def self.score_full_house
-    counts = @roll.tally.values.sort
+    counts = @tally_roll.values.sort
     counts == [2, 3] ? { category: :full_house, score: 25 } : { category: nil, score: 0 }
   end
 
@@ -95,7 +101,7 @@ class YahtzeeScoring
   end
 
   def self.score_chance
-    tally_roll = @roll.tally
-    (!tally_roll.value?(3) || !tally_roll.value?(4)) ? { category: :chance, score: @roll.sum } : { category: nil, score: 0 }
+    (!@tally_roll.value?(3) || !@tally_roll.value?(4)) ? { category: :chance, score: @roll.sum } : { category: nil, score: 0 }
   end
 end
+
