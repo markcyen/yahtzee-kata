@@ -1,5 +1,7 @@
 class YahtzeeScoring
   def self.best_score(roll)
+    return "Error: The number of die being rolled should only be five." if roll.length != 5
+
     best_category = nil
     best_score = 0
 
@@ -61,44 +63,35 @@ class YahtzeeScoring
   end
 
   def self.score_three_of_a_kind(roll)
-    roll.each do |num|
-      return { category: :three_of_a_kind, score: roll.sum } if roll.count(num) >= 3
-    end
-    { category: nil, score: 0 }
+    roll.tally.value?(3) ? { category: :three_of_a_kind, score: roll.sum } : { category: nil, score: 0 }
   end
 
   def self.score_four_of_a_kind(roll)
-    roll.each do |num|
-      return { category: :four_of_a_kind, score: roll.sum } if roll.count(num) >= 4
-    end
-    { category: nil, score: 0 }
+    roll.tally.value?(4) ? { category: :four_of_a_kind, score: roll.sum } : { category: nil, score: 0 }
   end
 
   def self.score_full_house(roll)
     counts = roll.tally.values.sort
-    return { category: :full_house, score: 25 } if counts == [2, 3]
-    { category: nil, score: 0 }
+    counts == [2, 3] ? { category: :full_house, score: 25 } : { category: nil, score: 0 }
   end
 
   def self.score_small_straight(roll)
     unique_sorted = roll.uniq.sort
     straights = [[1, 2, 3, 4], [2, 3, 4, 5], [3, 4, 5, 6]]
-    return { category: :small_straight, score: 30 } if straights.any? { |s| (s - unique_sorted).empty? }
-    { category: nil, score: 0 }
+    straights.any? { |s| (s - unique_sorted).empty? } ? { category: :small_straight, score: 30 } : { category: nil, score: 0 }
   end
 
   def self.score_large_straight(roll)
-    unique_sorted = roll.uniq.sort
-    return { category: :large_straight, score: 40 } if unique_sorted == [1, 2, 3, 4, 5] || unique_sorted == [2, 3, 4, 5, 6]
-    { category: nil, score: 0 }
+    min, max = roll.minmax
+    (max - min == 4 && roll.uniq.size == 5) ? { category: :large_straight, score: 40 } : { category: nil, score: 0 }
   end
 
   def self.score_yahtzee(roll)
-    return { category: :yahtzee, score: 50 } if roll.uniq.length == 1
-    { category: nil, score: 0 }
+    roll.uniq.length == 1 ? { category: :yahtzee, score: 50 } : { category: nil, score: 0 }
   end
 
   def self.score_chance(roll)
-    { category: :chance, score: roll.sum }
+    tally_roll = roll.tally
+    (!tally_roll.value?(3) || !tally_roll.value?(4)) ? { category: :chance, score: roll.sum } : { category: nil, score: 0 }
   end
 end
