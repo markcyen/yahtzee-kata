@@ -4,17 +4,17 @@ class YahtzeeScoring
 
   def self.best_score(roll = [])
     @roll = roll
+    @tally_roll = @roll.tally
 
     return "Error: The number of die being rolled should be five." if @roll.length != 5
 
-    best = [score_upper_section, score_lower_section].max_by { |roll| roll[:score] }
+    best = [score_lower_section, score_upper_section].max_by { |roll| roll[:score] }
 
     { category: best[:category], score: best[:score] }
   end
 
   # score_upper_section determines the best_category and best_score for the upper section
   def self.score_upper_section
-    @tally_roll = @roll.tally
     num_to_category = { 1 => :ones, 2 => :twos, 3 => :threes, 4 => :fours, 5 => :fives, 6 => :sixes }
 
     # This method gets the best score first by the frequency
@@ -30,17 +30,17 @@ class YahtzeeScoring
   def self.score_lower_section
     sum_roll = @roll.sum
 
-    relevant_categories = []
-    relevant_categories << { category: :yahtzee, score: 50 } if is_yahtzee?()
-    relevant_categories << { category: :large_straight, score: 40 } if is_large_straight?()
-    relevant_categories << { category: :small_straight, score: 30 } if is_small_straight?()
-    relevant_categories << { category: :full_house, score: 25 } if is_full_house?()
-    relevant_categories << { category: :four_of_a_kind, score: sum_roll } if is_four_of_a_kind?()
-    relevant_categories << { category: :three_of_a_kind, score: sum_roll } if is_three_of_a_kind?()
-    relevant_categories << { category: :chance, score: sum_roll } if !is_four_of_a_kind?() || !is_three_of_a_kind?()
+    categories = []
+    categories << { category: :yahtzee, score: 50 } if is_yahtzee?()
+    categories << { category: :large_straight, score: 40 } if is_large_straight?()
+    categories << { category: :small_straight, score: 30 } if is_small_straight?()
+    categories << { category: :full_house, score: 25 } if is_full_house?()
+    categories << { category: :four_of_a_kind, score: sum_roll } if is_four_of_a_kind?()
+    categories << { category: :three_of_a_kind, score: sum_roll } if is_three_of_a_kind?()
+    categories << { category: :chance, score: sum_roll }
 
     # If there are two scores that are equal, this function extracts the first one in the array
-    best = relevant_categories.max_by { |roll| roll[:score] }
+    best = categories.max_by { |roll| roll[:score] }
 
     { category: best[:category], score: best[:score] }
   end
