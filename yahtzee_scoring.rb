@@ -68,11 +68,11 @@ class YahtzeeScoring
   end
 
   def self.is_four_of_a_kind?
-    @tally_roll.value?(4)
+    @tally_roll.values.any? { |v| v >= 4 }
   end
 
   def self.is_three_of_a_kind?
-    @tally_roll.value?(3)
+    @tally_roll.values.any? { |v| v >= 3 }
   end
   # ***********
 end

@@ -185,7 +185,7 @@ class TestYahtzeeScoring < Minitest::Test
 
     yahtzee_roll = [3, 3, 3, 3, 3]
     YahtzeeScoring.instance_variable_set(:@tally_roll, yahtzee_roll.tally)
-    assert_equal(false, YahtzeeScoring.is_four_of_a_kind?())
+    assert_equal(true, YahtzeeScoring.is_four_of_a_kind?())
   end
 
   def test_is_three_of_a_kind?
@@ -199,10 +199,10 @@ class TestYahtzeeScoring < Minitest::Test
 
     four_of_a_kind_roll = [2, 3, 3, 3, 3]
     YahtzeeScoring.instance_variable_set(:@tally_roll, four_of_a_kind_roll.tally)
-    assert_equal(false, YahtzeeScoring.is_three_of_a_kind?())
+    assert_equal(true, YahtzeeScoring.is_three_of_a_kind?())
 
     yahtzee_roll = [3, 3, 3, 3, 3]
     YahtzeeScoring.instance_variable_set(:@tally_roll, yahtzee_roll.tally)
-    assert_equal(false, YahtzeeScoring.is_three_of_a_kind?())
+    assert_equal(true, YahtzeeScoring.is_three_of_a_kind?())
   end
 end
