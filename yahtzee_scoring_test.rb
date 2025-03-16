@@ -3,7 +3,9 @@ require_relative "yahtzee_scoring"
 
 class TestYahtzeeScoring < Minitest::Test
   def test_best_score_roll_length_error
-    assert_equal("Error: The number of die being rolled should only be five.", YahtzeeScoring.best_score([6, 6, 6, 2, 1, 3]))
+    assert_equal("Error: The number of die being rolled should be five.", YahtzeeScoring.best_score([6, 6, 6, 2, 1, 3]))
+    assert_equal("Error: The number of die being rolled should be five.", YahtzeeScoring.best_score([]))
+    assert_equal("Error: The number of die being rolled should be five.", YahtzeeScoring.best_score())
   end
 
   def test_best_score_three_of_a_kind
@@ -50,18 +52,18 @@ class TestYahtzeeScoring < Minitest::Test
 
   def test_score_upper_section
     roll = [1, 3, 3, 3, 6]
-    tally_roll = roll.tally
-    YahtzeeScoring.instance_variable_set(:@tally_roll, tally_roll)
+    YahtzeeScoring.instance_variable_set(:@roll, roll)
+    YahtzeeScoring.instance_variable_set(:@tally_roll, roll.tally)
     assert_equal({ category: :threes, score: 9 }, YahtzeeScoring.score_upper_section)
 
     largest_die_roll = [1, 3, 3, 5, 6]
-    tally_roll = largest_die_roll.tally
-    YahtzeeScoring.instance_variable_set(:@tally_roll, tally_roll)
+    YahtzeeScoring.instance_variable_set(:@roll, largest_die_roll)
+    YahtzeeScoring.instance_variable_set(:@tally_roll, largest_die_roll.tally)
     assert_equal({ category: :sixes, score: 6 }, YahtzeeScoring.score_upper_section)
 
-    roll = [2, 2, 4, 5, 6]
-    tally_roll = roll.tally
-    YahtzeeScoring.instance_variable_set(:@tally_roll, tally_roll)
+    reality_roll = [2, 2, 4, 5, 6]
+    YahtzeeScoring.instance_variable_set(:@roll, reality_roll)
+    YahtzeeScoring.instance_variable_set(:@tally_roll, reality_roll.tally)
     assert_equal({ category: :sixes, score: 6 }, YahtzeeScoring.score_upper_section)
   end
 
@@ -201,5 +203,4 @@ class TestYahtzeeScoring < Minitest::Test
     YahtzeeScoring.instance_variable_set(:@tally_roll, yahtzee_roll.tally)
     assert_equal(false, YahtzeeScoring.is_three_of_a_kind?())
   end
-
 end

@@ -1,50 +1,33 @@
 class YahtzeeScoring
   @roll = []
   @tally_roll = {}
-  @num_to_category = { 1 => :ones, 2 => :twos, 3 => :threes, 4 => :fours, 5 => :fives, 6 => :sixes }
 
-  def self.best_score(roll)
+  def self.best_score(roll = [])
     @roll = roll
 
-    return "Error: The number of die being rolled should only be five." if @roll.length != 5
+    return "Error: The number of die being rolled should be five." if @roll.length != 5
 
-    @tally_roll = @roll.tally
+    best = [score_upper_section, score_lower_section].max_by { |roll| roll[:score] }
 
-    best_category = nil
-    best_score = 0
-
-    score = score_upper_section
-    if score[:score] > best_score
-      best_score = score[:score]
-      best_category = score[:category]
-    end
-
-    score = score_lower_section
-    if score[:score] > best_score
-      best_score = score[:score]
-      best_category = score[:category]
-    end
-
-    { category: best_category, score: best_score }
+    { category: best[:category], score: best[:score] }
   end
 
   # score_upper_section determines the best_category and best_score for the upper section
   def self.score_upper_section
+    @tally_roll = @roll.tally
+    num_to_category = { 1 => :ones, 2 => :twos, 3 => :threes, 4 => :fours, 5 => :fives, 6 => :sixes }
 
-    # This method gets the best score first by the value
-    # If the value is tied, then it gets it by the highest key (or dice roll)
-    num, frequency = @tally_roll.max_by { |k, v| [k * v, k] }
-    best_score = num * frequency
-    best_category = @num_to_category[num]
+    # This method gets the best score first by the frequency
+    # If the score is tied, then this method gets the number and frequency by the highest dice number
+    number, frequency = @tally_roll.max_by { |num, freq| [num * freq, num] }
+    best_score = number * frequency
+    best_category = num_to_category[number]
  
     { category: best_category, score: best_score }
   end
 
   # score_lower_section determines the best_category and best_score for the lower section
   def self.score_lower_section
-    best_category = nil
-    best_score = 0
-
     sum_roll = @roll.sum
 
     relevant_categories = []
@@ -56,7 +39,7 @@ class YahtzeeScoring
     relevant_categories << { category: :three_of_a_kind, score: sum_roll } if is_three_of_a_kind?()
     relevant_categories << { category: :chance, score: sum_roll } if !is_four_of_a_kind?() || !is_three_of_a_kind?()
 
-    # max_by extracts the first one in the array if there are two scores that are the same
+    # If there are two scores that are equal, this function extracts the first one in the array
     best = relevant_categories.max_by { |roll| roll[:score] }
 
     { category: best[:category], score: best[:score] }
