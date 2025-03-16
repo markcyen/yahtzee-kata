@@ -6,9 +6,9 @@ class YahtzeeScoring
     @roll = roll
     @tally_roll = @roll.tally
 
-    return "Error: The number of die being rolled should be five." if @roll.length != 5
+    raise ArgumentError, "Error: The number of die being rolled should be five." if @roll.length != 5
 
-    best = [score_lower_section, score_upper_section].max_by { |roll| roll[:score] }
+    best = [score_upper_section, score_lower_section].max_by { |roll| roll[:score] }
 
     { category: best[:category], score: best[:score] }
   end
@@ -63,8 +63,8 @@ class YahtzeeScoring
   end
 
   def self.is_full_house?
-    counts = @tally_roll.values.sort
-    counts == [2, 3]
+    counts = @tally_roll.values
+    counts == [2, 3] || counts == [3, 2]
   end
 
   def self.is_four_of_a_kind?

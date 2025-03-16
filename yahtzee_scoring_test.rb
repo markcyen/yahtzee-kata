@@ -2,10 +2,10 @@ require "minitest/autorun"
 require_relative "yahtzee_scoring"
 
 class TestYahtzeeScoring < Minitest::Test
-  def test_best_score_roll_length_error
-    assert_equal("Error: The number of die being rolled should be five.", YahtzeeScoring.best_score([6, 6, 6, 2, 1, 3]))
-    assert_equal("Error: The number of die being rolled should be five.", YahtzeeScoring.best_score([]))
-    assert_equal("Error: The number of die being rolled should be five.", YahtzeeScoring.best_score())
+  def test_best_score_raises_error_for_incorrect_roll_length_input
+    assert_raises(ArgumentError, "Error: The number of die being rolled should be five.") { YahtzeeScoring.best_score([6, 6, 6, 2, 1, 3]) }
+    assert_raises(ArgumentError, "Error: The number of die being rolled should be five.") { YahtzeeScoring.best_score([]) }
+    assert_raises(ArgumentError, "Error: The number of die being rolled should be five.") { YahtzeeScoring.best_score() }
   end
 
   def test_best_score_three_of_a_kind
@@ -107,12 +107,14 @@ class TestYahtzeeScoring < Minitest::Test
     YahtzeeScoring.instance_variable_set(:@roll, three_of_a_kind_vs_full_house_roll)
     YahtzeeScoring.instance_variable_set(:@tally_roll, three_of_a_kind_vs_full_house_roll.tally)
     assert_equal({ category: :three_of_a_kind, score: 26 }, YahtzeeScoring.score_lower_section)
+    refute_equal({ category: :full_house, score: 25 }, YahtzeeScoring.score_lower_section)
 
     # Testing when there are two best_scores, then choosing the first one (in order)
     four_of_a_kind_vs_chance_roll = [6, 6, 6, 6, 4]
     YahtzeeScoring.instance_variable_set(:@roll, four_of_a_kind_vs_chance_roll)
     YahtzeeScoring.instance_variable_set(:@tally_roll, four_of_a_kind_vs_chance_roll.tally)
     assert_equal({ category: :four_of_a_kind, score: 28 }, YahtzeeScoring.score_lower_section)
+    refute_equal({ category: :chance, score: 28 }, YahtzeeScoring.score_lower_section)
   end
 
   # Unit testing
