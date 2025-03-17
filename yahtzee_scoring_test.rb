@@ -96,8 +96,8 @@ class TestYahtzeeScoring < Minitest::Test
     small_straight_back_roll = [1, 3, 4, 5, 6]
     assert_equal(true, YahtzeeScoring.is_small_straight?(small_straight_back_roll))
 
-    not_small_straight_roll = [1, 2, 3, 4, 5]
-    assert_equal(false, YahtzeeScoring.is_small_straight?(not_small_straight_roll))
+    large_straight_roll = [1, 2, 3, 4, 5]
+    assert_equal(true, YahtzeeScoring.is_small_straight?(large_straight_roll))
   end
 
   def test_is_full_house?
@@ -116,7 +116,7 @@ class TestYahtzeeScoring < Minitest::Test
     assert_equal(true, YahtzeeScoring.is_four_of_a_kind?(four_of_a_kind_roll.tally))
 
     not_four_of_a_kind_roll = [2, 2, 3, 3, 3]
-    assert_equal(false, YahtzeeScoring.is_four_of_a_kind?(four_of_a_kind_roll.tally))
+    assert_equal(false, YahtzeeScoring.is_four_of_a_kind?(not_four_of_a_kind_roll.tally))
 
     yahtzee_roll = [3, 3, 3, 3, 3]
     assert_equal(true, YahtzeeScoring.is_four_of_a_kind?(yahtzee_roll.tally))
