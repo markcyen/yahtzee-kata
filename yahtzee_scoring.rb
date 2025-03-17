@@ -5,6 +5,9 @@ class YahtzeeScoring
 
     combined_sections = score_upper_section(tally_roll).merge(score_lower_section(roll))
     highest_score = combined_sections.values.max
+    
+    # Results of highest score with category(ies) are structured as:
+    # {:three_of_a_kind => 26} where the key is the category and the best score is the value
     combined_sections.select { |category, score| score == highest_score}
   end
 
@@ -70,4 +73,3 @@ class YahtzeeScoring
   end
   # ***********
 end
-
