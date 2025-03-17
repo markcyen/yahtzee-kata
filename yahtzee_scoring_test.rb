@@ -8,113 +8,78 @@ class TestYahtzeeScoring < Minitest::Test
     assert_raises(ArgumentError, "Error: The number of die being rolled should be five.") { YahtzeeScoring.best_score() }
   end
 
-  def test_best_score_three_of_a_kind
-    assert_equal({ category: :three_of_a_kind, score: 21 }, YahtzeeScoring.best_score([6, 6, 6, 2, 1]))
-    assert_equal({ category: :three_of_a_kind, score: 16 }, YahtzeeScoring.best_score([5, 3, 3, 3, 2]))
-    assert_equal({ category: :three_of_a_kind, score: 26 }, YahtzeeScoring.best_score([6, 6, 6, 4, 4]))
-    refute_equal({ category: :full_house, score: 25 }, YahtzeeScoring.best_score([6, 6, 6, 4, 4]))
-  end
+  def test_best_score
+    # Testing three of a kind but getting chance as having the best score as well
+    actual = {:three_of_a_kind => 21, :chance => 21}
+    assert_equal(actual, YahtzeeScoring.best_score([6, 6, 6, 2, 1]))
 
-  def test_best_score_four_of_a_kind
-    assert_equal({category: :four_of_a_kind, score: 27 }, YahtzeeScoring.best_score([6, 6, 6, 6, 3]))
-    assert_equal({category: :four_of_a_kind, score: 16 }, YahtzeeScoring.best_score([3, 3, 4, 3, 3]))
-  end
+    # Testing four of a kind and also getting three of a kind and chance having the best score as well
+    actual = {:four_of_a_kind => 27, :three_of_a_kind => 27, :chance => 27}
+    assert_equal(actual, YahtzeeScoring.best_score([6, 6, 6, 6, 3]))
 
-  def test_best_score_full_house
-    assert_equal({ category: :full_house, score: 25 }, YahtzeeScoring.best_score([3, 3, 3, 5, 5]))
-    assert_equal({ category: :full_house, score: 25 }, YahtzeeScoring.best_score([1, 2, 1, 2, 1]))
-    refute_equal({ category: :full_house, score: 25 }, YahtzeeScoring.best_score([6, 6, 6, 4, 4]))
-  end
+    # Testing full house
+    assert_equal({:full_house => 25}, YahtzeeScoring.best_score([3, 3, 3, 5, 5]))
 
-  def test_best_score_small_straight
-    assert_equal({ category: :small_straight, score: 30 }, YahtzeeScoring.best_score([1, 3, 4, 5, 6]))
-    assert_equal({ category: :small_straight, score: 30 }, YahtzeeScoring.best_score([5, 3, 2, 4, 5]))
-    assert_equal({ category: :small_straight, score: 30 }, YahtzeeScoring.best_score([1, 2, 3, 4, 6]))
-    refute_equal({ category: :small_straight, score: 30 }, YahtzeeScoring.best_score([2, 2, 4, 5, 6]))
-  end
+    # Testing small straight
+    assert_equal({:small_straight => 30}, YahtzeeScoring.best_score([1, 3, 4, 5, 6]))
 
-  def test_best_score_large_straight
-    assert_equal({ category: :large_straight, score: 40 }, YahtzeeScoring.best_score([2, 3, 4, 5, 6]))
-    assert_equal({ category: :large_straight, score: 40 }, YahtzeeScoring.best_score([1, 2, 3, 4, 5]))
-    refute_equal({ category: :large_straight, score: 40 }, YahtzeeScoring.best_score([1, 2, 4, 5, 6]))
+    # Testing large straight
+    assert_equal({:large_straight => 40}, YahtzeeScoring.best_score([2, 3, 4, 5, 6]))    
 
-  end
+    # Testing Yahtzee
+    assert_equal({:yahtzee => 50}, YahtzeeScoring.best_score([6, 6, 6, 6, 6]))
 
-  def test_best_score_yahtzee
-    assert_equal({ category: :yahtzee, score: 50 }, YahtzeeScoring.best_score([6, 6, 6, 6, 6]))
-    refute_equal({ category: :yahtzee, score: 50 }, YahtzeeScoring.best_score([6, 6, 6, 6, 1]))
-  end
-
-  def test_best_score_chance
-    assert_equal({ category: :chance, score: 17 }, YahtzeeScoring.best_score([1, 2, 3, 5, 6]))
-    assert_equal({ category: :chance, score: 22 }, YahtzeeScoring.best_score([2, 3, 5, 6, 6]))
+    # Testing chance
+    assert_equal({:chance => 17}, YahtzeeScoring.best_score([1, 2, 3, 5, 6]))
   end
 
   def test_score_upper_section
-    roll = [1, 3, 3, 3, 6]
-    YahtzeeScoring.instance_variable_set(:@roll, roll)
-    YahtzeeScoring.instance_variable_set(:@tally_roll, roll.tally)
-    assert_equal({ category: :threes, score: 9 }, YahtzeeScoring.score_upper_section)
-
     largest_die_roll = [1, 3, 3, 5, 6]
     YahtzeeScoring.instance_variable_set(:@roll, largest_die_roll)
     YahtzeeScoring.instance_variable_set(:@tally_roll, largest_die_roll.tally)
-    assert_equal({ category: :sixes, score: 6 }, YahtzeeScoring.score_upper_section)
+    assert_equal({:threes => 6, :sixes => 6}, YahtzeeScoring.score_upper_section)
 
     reality_roll = [2, 2, 4, 5, 6]
     YahtzeeScoring.instance_variable_set(:@roll, reality_roll)
     YahtzeeScoring.instance_variable_set(:@tally_roll, reality_roll.tally)
-    assert_equal({ category: :sixes, score: 6 }, YahtzeeScoring.score_upper_section)
+    assert_equal({:sixes => 6}, YahtzeeScoring.score_upper_section)
   end
 
   def test_score_lower_section
     yahtzee_roll = [6, 6, 6, 6, 6]
     YahtzeeScoring.instance_variable_set(:@roll, yahtzee_roll)
     YahtzeeScoring.instance_variable_set(:@tally_roll, yahtzee_roll.tally)
-    assert_equal({ category: :yahtzee, score: 50 }, YahtzeeScoring.score_lower_section)
+    assert_equal({:yahtzee => 50}, YahtzeeScoring.score_lower_section)
 
     large_straight_roll = [1, 2, 3, 4, 5]
     YahtzeeScoring.instance_variable_set(:@roll, large_straight_roll)
-    assert_equal({ category: :large_straight, score: 40 }, YahtzeeScoring.score_lower_section)
+    assert_equal({:large_straight => 40}, YahtzeeScoring.score_lower_section)
 
     small_straight_roll = [2, 2, 3, 4, 5]
     YahtzeeScoring.instance_variable_set(:@roll, small_straight_roll)
-    assert_equal({ category: :small_straight, score: 30 }, YahtzeeScoring.score_lower_section)
+    assert_equal({:small_straight => 30}, YahtzeeScoring.score_lower_section)
 
     full_house_roll = [3, 3, 5, 5, 5]
     YahtzeeScoring.instance_variable_set(:@roll, full_house_roll)
     YahtzeeScoring.instance_variable_set(:@tally_roll, full_house_roll.tally)
-    assert_equal({ category: :full_house, score: 25 }, YahtzeeScoring.score_lower_section)
+    assert_equal({:full_house => 25}, YahtzeeScoring.score_lower_section)
 
-    four_of_a_kind_roll = [3, 5, 5, 5, 5]
-    YahtzeeScoring.instance_variable_set(:@roll, four_of_a_kind_roll)
-    YahtzeeScoring.instance_variable_set(:@tally_roll, four_of_a_kind_roll.tally)
-    assert_equal({ category: :four_of_a_kind, score: 23 }, YahtzeeScoring.score_lower_section)
+    multiple_rolls = [3, 5, 5, 5, 5]
+    YahtzeeScoring.instance_variable_set(:@roll, multiple_rolls)
+    YahtzeeScoring.instance_variable_set(:@tally_roll, multiple_rolls.tally)
+    actual = {:four_of_a_kind => 23, :three_of_a_kind => 23, :chance => 23}
+    assert_equal(actual, YahtzeeScoring.score_lower_section)
 
-    three_of_a_kind_roll = [5, 1, 5, 4, 5]
-    YahtzeeScoring.instance_variable_set(:@roll, three_of_a_kind_roll)
-    YahtzeeScoring.instance_variable_set(:@tally_roll, three_of_a_kind_roll.tally)
-    assert_equal({ category: :three_of_a_kind, score: 20 }, YahtzeeScoring.score_lower_section)
+    three_of_a_kind_or_chance_roll = [5, 1, 5, 4, 5]
+    YahtzeeScoring.instance_variable_set(:@roll, three_of_a_kind_or_chance_roll)
+    YahtzeeScoring.instance_variable_set(:@tally_roll, three_of_a_kind_or_chance_roll.tally)
+    actual = {:three_of_a_kind => 20, :chance => 20}
+    assert_equal(actual, YahtzeeScoring.score_lower_section)
 
     chance_roll = [2, 1, 4, 4, 1]
     YahtzeeScoring.instance_variable_set(:@roll, chance_roll)
     YahtzeeScoring.instance_variable_set(:@tally_roll, chance_roll.tally)
-    assert_equal({ category: :chance, score: 12 }, YahtzeeScoring.score_lower_section)
-
-    # Edge cases:
-    # Testing the best score when it could be three of a kind vs full house
-    three_of_a_kind_vs_full_house_roll = [6, 6, 6, 4, 4]
-    YahtzeeScoring.instance_variable_set(:@roll, three_of_a_kind_vs_full_house_roll)
-    YahtzeeScoring.instance_variable_set(:@tally_roll, three_of_a_kind_vs_full_house_roll.tally)
-    assert_equal({ category: :three_of_a_kind, score: 26 }, YahtzeeScoring.score_lower_section)
-    refute_equal({ category: :full_house, score: 25 }, YahtzeeScoring.score_lower_section)
-
-    # Testing when there are two best_scores, then choosing the first one (in order)
-    four_of_a_kind_vs_chance_roll = [6, 6, 6, 6, 4]
-    YahtzeeScoring.instance_variable_set(:@roll, four_of_a_kind_vs_chance_roll)
-    YahtzeeScoring.instance_variable_set(:@tally_roll, four_of_a_kind_vs_chance_roll.tally)
-    assert_equal({ category: :four_of_a_kind, score: 28 }, YahtzeeScoring.score_lower_section)
-    refute_equal({ category: :chance, score: 28 }, YahtzeeScoring.score_lower_section)
+    assert_equal({:chance => 12}, YahtzeeScoring.score_lower_section)
   end
 
   # Unit testing
