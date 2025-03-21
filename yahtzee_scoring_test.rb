@@ -43,61 +43,64 @@ class TestYahtzeeScoring < Minitest::Test
 
   def test_score_lower_section
     yahtzee_roll = [6, 6, 6, 6, 6]
-    assert_equal({:yahtzee => 50}, YahtzeeScoring.score_lower_section(yahtzee_roll))
+    assert_equal({:yahtzee => 50}, YahtzeeScoring.score_lower_section(yahtzee_roll.tally))
 
     large_straight_roll = [1, 2, 3, 4, 5]
-    assert_equal({:large_straight => 40}, YahtzeeScoring.score_lower_section(large_straight_roll))
+    assert_equal({:large_straight => 40}, YahtzeeScoring.score_lower_section(large_straight_roll.tally))
 
     small_straight_roll = [2, 2, 3, 4, 5]
-    assert_equal({:small_straight => 30}, YahtzeeScoring.score_lower_section(small_straight_roll))
+    assert_equal({:small_straight => 30}, YahtzeeScoring.score_lower_section(small_straight_roll.tally))
 
     full_house_roll = [3, 3, 5, 5, 5]
-    assert_equal({:full_house => 25}, YahtzeeScoring.score_lower_section(full_house_roll))
+    assert_equal({:full_house => 25}, YahtzeeScoring.score_lower_section(full_house_roll.tally))
 
     multiple_rolls = [3, 5, 5, 5, 5]
     expected = {:four_of_a_kind => 23, :three_of_a_kind => 23, :chance => 23}
-    assert_equal(expected, YahtzeeScoring.score_lower_section(multiple_rolls))
+    assert_equal(expected, YahtzeeScoring.score_lower_section(multiple_rolls.tally))
 
     three_of_a_kind_or_chance_roll = [5, 1, 5, 4, 5]
     expected = {:three_of_a_kind => 20, :chance => 20}
-    assert_equal(expected, YahtzeeScoring.score_lower_section(three_of_a_kind_or_chance_roll))
+    assert_equal(expected, YahtzeeScoring.score_lower_section(three_of_a_kind_or_chance_roll.tally))
 
     chance_roll = [2, 1, 4, 4, 1]
-    assert_equal({:chance => 12}, YahtzeeScoring.score_lower_section(chance_roll))
+    assert_equal({:chance => 12}, YahtzeeScoring.score_lower_section(chance_roll.tally))
   end
 
   # Unit testing
   def test_is_yahtzee?
     yahtzee_roll = [1, 1, 1, 1, 1]
-    assert_equal(true, YahtzeeScoring.is_yahtzee?(yahtzee_roll))
+    assert_equal(true, YahtzeeScoring.is_yahtzee?(yahtzee_roll.tally))
 
     not_yahtzee_roll = [1, 1, 1, 1, 2]
-    assert_equal(false, YahtzeeScoring.is_yahtzee?(not_yahtzee_roll))
+    assert_equal(false, YahtzeeScoring.is_yahtzee?(not_yahtzee_roll.tally))
   end
 
   def test_is_large_straight?
     large_straight_front_roll = [1, 2, 3, 4, 5]
-    assert_equal(true, YahtzeeScoring.is_large_straight?(large_straight_front_roll))
+    assert_equal(true, YahtzeeScoring.is_large_straight?(large_straight_front_roll.tally))
 
     large_straight_back_roll = [2, 3, 4, 5, 6]
-    assert_equal(true, YahtzeeScoring.is_large_straight?(large_straight_back_roll))
+    assert_equal(true, YahtzeeScoring.is_large_straight?(large_straight_back_roll.tally))
 
     not_large_straight_roll = [1, 1, 1, 1, 2]
-    assert_equal(false, YahtzeeScoring.is_large_straight?(not_large_straight_roll))
+    assert_equal(false, YahtzeeScoring.is_large_straight?(not_large_straight_roll.tally))
   end
 
   def test_is_small_straight?
     small_straight_front_roll = [1, 2, 3, 4, 6]
-    assert_equal(true, YahtzeeScoring.is_small_straight?(small_straight_front_roll))
+    assert_equal(true, YahtzeeScoring.is_small_straight?(small_straight_front_roll.tally))
 
     small_straight_middle_roll = [2, 2, 3, 4, 5]
-    assert_equal(true, YahtzeeScoring.is_small_straight?(small_straight_middle_roll))
+    assert_equal(true, YahtzeeScoring.is_small_straight?(small_straight_middle_roll.tally))
 
     small_straight_back_roll = [1, 3, 4, 5, 6]
-    assert_equal(true, YahtzeeScoring.is_small_straight?(small_straight_back_roll))
+    assert_equal(true, YahtzeeScoring.is_small_straight?(small_straight_back_roll.tally))
 
     large_straight_roll = [1, 2, 3, 4, 5]
-    assert_equal(true, YahtzeeScoring.is_small_straight?(large_straight_roll))
+    assert_equal(true, YahtzeeScoring.is_small_straight?(large_straight_roll.tally))
+
+    not_small_straight_roll = [4, 3, 2, 4, 6]
+    assert_equal(false, YahtzeeScoring.is_small_straight?(not_small_straight_roll.tally))
   end
 
   def test_is_full_house?
