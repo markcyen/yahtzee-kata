@@ -23,57 +23,32 @@ class YahtzeeScoring
   # and returns a hash of of best categories that have the highest score
   def self.score_lower_section(tally_roll)
     sum_tally = tally_roll.sum { |num, freq| num * freq }
+    count_tally = tally_roll.values
 
     categories = {}
-    if is_yahtzee?(tally_roll)
-      categories[:yahtzee] = 50 
-      return categories
+    if count_tally.any? { |count| count >= 3 }
+      if count_tally.include?(5)
+        categories[:yahtzee] = 50 
+        return categories
+      end
+
+      categories[:four_of_a_kind] = sum_tally if count_tally.max >= 4
+      categories[:three_of_a_kind] = sum_tally if count_tally.max >= 3
+      categories[:full_house] = 25 if count_tally == [2, 3] || count_tally == [3, 2]
     end
 
-    categories[:large_straight] = 40 if is_large_straight?(tally_roll)
-    categories[:small_straight] = 30 if is_small_straight?(tally_roll)
-    categories[:full_house] = 25 if is_full_house?(tally_roll)
-    categories[:four_of_a_kind] = sum_tally if is_four_of_a_kind?(tally_roll)
-    categories[:three_of_a_kind] = sum_tally if is_three_of_a_kind?(tally_roll)
+    large_straight = [[1, 2, 3, 4, 5], [2, 3, 4, 5, 6]]
+    small_straight = [[1, 2, 3, 4], [2, 3, 4, 5], [3, 4, 5, 6]]
+
+    if tally_roll.keys.size >= 4
+      categories[:large_straight] = 40 if large_straight.any? { |sequence| sequence.all? { |num| tally_roll.key?(num) } }
+      categories[:small_straight] = 30 if small_straight.any? { |sequence| sequence.all? { |num| tally_roll.key?(num) } }
+    end
+
     categories[:chance] = sum_tally
 
     highest_score = categories.values.max
     categories.select { |_, score| score == highest_score}
   end
-
-  # Checks for lower section categories
-  # ***********
-  def self.is_yahtzee?(tally_roll)
-    tally_roll.values.include?(5)
-  end
-
-  def self.is_large_straight?(tally_roll)
-    straights = [[1, 2, 3, 4, 5], [2, 3, 4, 5, 6]]
-
-    straights.any? do |sequence|
-      sequence.all? { |num| tally_roll.key?(num) }
-    end
-  end
-
-  def self.is_small_straight?(tally_roll)
-    straights = [[1, 2, 3, 4], [2, 3, 4, 5], [3, 4, 5, 6]]
-    straights.any? do |sequence|
-      sequence.all? { |num| tally_roll.key?(num) }
-    end
-  end
-
-  def self.is_full_house?(tally_roll)
-    counts = tally_roll.values
-    counts == [2, 3] || counts == [3, 2]
-  end
-
-  def self.is_four_of_a_kind?(tally_roll)
-    tally_roll.values.max >= 4
-  end
-
-  def self.is_three_of_a_kind?(tally_roll)
-    tally_roll.values.max >= 3
-  end
-  # ***********
 end
 
